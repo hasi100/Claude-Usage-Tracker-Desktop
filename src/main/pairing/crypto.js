@@ -22,16 +22,11 @@ function fromB64(s) {
 
 function encrypt(message, recipientPubB64, ownSecretKey) {
   const nonce = nacl.randomBytes(nacl.box.nonceLength)
-  const box = nacl.box(
-    Buffer.from(JSON.stringify(message), 'utf-8'),
-    nonce,
-    fromB64(recipientPubB64),
-    ownSecretKey,
-  )
-  return {
-    n: toB64(nonce),
-    c: toB64(box),
-  }
+  const buf = Buffer.from(JSON.stringify(message), 'utf-8')
+  // tweetnacl needs a strict Uint8Array — Buffer subclass not accepted.
+  const plain = new Uint8Array(buf.buffer, buf.byteOffset, buf.byteLength)
+  const box = nacl.box(plain, nonce, fromB64(recipientPubB64), ownSecretKey)
+  return { n: toB64(nonce), c: toB64(box) }
 }
 
 function decrypt(payload, senderPubB64, ownSecretKey) {

@@ -2,7 +2,14 @@
 // Each profile owns its own credentials and source toggles.
 
 const { v4: uuid } = require('uuid')
-const { safeStorage } = require('electron')
+
+let _safeStorage = null
+function getSafeStorage() {
+  if (_safeStorage) return _safeStorage
+  _safeStorage = require('electron').safeStorage
+  return _safeStorage
+}
+function setSafeStorage(stub) { _safeStorage = stub }  // testing seam
 
 const FUN_NAMES = ['Falcon', 'Otter', 'Lynx', 'Heron', 'Sable', 'Wren', 'Marlin', 'Vireo']
 const FUN_ADJ   = ['Quiet', 'Swift', 'Bold', 'Calm', 'Lone', 'Bright', 'Slow', 'Sharp']
@@ -36,16 +43,18 @@ function emptyProfile(existing = []) {
 
 function encrypt(plain) {
   if (!plain) return null
-  if (!safeStorage.isEncryptionAvailable()) return plain // fallback: plaintext
-  return safeStorage.encryptString(plain).toString('base64')
+  const ss = getSafeStorage()
+  if (!ss.isEncryptionAvailable()) return plain
+  return ss.encryptString(plain).toString('base64')
 }
 
 function decrypt(enc) {
   if (!enc) return null
   if (typeof enc !== 'string') return null
-  if (!safeStorage.isEncryptionAvailable()) return enc
+  const ss = getSafeStorage()
+  if (!ss.isEncryptionAvailable()) return enc
   try {
-    return safeStorage.decryptString(Buffer.from(enc, 'base64'))
+    return ss.decryptString(Buffer.from(enc, 'base64'))
   } catch {
     return null
   }
@@ -137,4 +146,5 @@ module.exports = {
   publicProfile,
   encrypt,
   decrypt,
+  setSafeStorage,
 }

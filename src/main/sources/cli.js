@@ -30,7 +30,10 @@ function listJsonl(root = ROOT) {
 }
 
 function parseFile(filepath) {
-  const stats = { input: 0, output: 0, cacheCreate: 0, cacheRead: 0, lastTs: 0, model: null }
+  const stats = {
+    input: 0, output: 0, cacheCreate: 0, cacheRead: 0, lastTs: 0, model: null,
+    today: { input: 0, output: 0, cacheCreate: 0, cacheRead: 0 },
+  }
   let text
   try { text = fs.readFileSync(filepath, 'utf-8') } catch { return stats }
   for (const line of text.split('\n')) {
@@ -39,13 +42,18 @@ function parseFile(filepath) {
     try { obj = JSON.parse(line) } catch { continue }
     const u = obj?.message?.usage ?? obj?.usage
     if (!u) continue
-    stats.input       += Number(u.input_tokens ?? 0)
-    stats.output      += Number(u.output_tokens ?? 0)
-    stats.cacheCreate += Number(u.cache_creation_input_tokens ?? 0)
-    stats.cacheRead   += Number(u.cache_read_input_tokens ?? 0)
+    const i = Number(u.input_tokens ?? 0)
+    const o = Number(u.output_tokens ?? 0)
+    const cc = Number(u.cache_creation_input_tokens ?? 0)
+    const cr = Number(u.cache_read_input_tokens ?? 0)
+    stats.input += i; stats.output += o; stats.cacheCreate += cc; stats.cacheRead += cr
     if (obj?.message?.model) stats.model = obj.message.model
     const ts = obj?.timestamp ? Date.parse(obj.timestamp) : 0
     if (ts > stats.lastTs) stats.lastTs = ts
+    if (isToday(ts)) {
+      stats.today.input += i; stats.today.output += o
+      stats.today.cacheCreate += cc; stats.today.cacheRead += cr
+    }
   }
   return stats
 }
@@ -82,12 +90,10 @@ function scan() {
     all.output += s.output
     all.cacheCreate += s.cacheCreate
     all.cacheRead += s.cacheRead
-    if (isToday(s.lastTs)) {
-      today.input += s.input
-      today.output += s.output
-      today.cacheCreate += s.cacheCreate
-      today.cacheRead += s.cacheRead
-    }
+    today.input       += s.today.input
+    today.output      += s.today.output
+    today.cacheCreate += s.today.cacheCreate
+    today.cacheRead   += s.today.cacheRead
   }
 
   const topProjects = Object.values(byProj)

@@ -4,7 +4,8 @@
 
 const https = require('https')
 const os = require('os')
-const { getOrCreate } = require('./cert')
+const cert = require('./cert')
+const { getOrCreate } = cert
 const { genKeypair, toB64, encrypt, randomToken } = require('./crypto')
 
 let server = null
@@ -26,19 +27,21 @@ function lanIp() {
 }
 
 function startServer() {
-  if (server) return getPairingInfo()
+  if (server) return Promise.resolve(getPairingInfo())
 
-  const { cert, key, fingerprint } = getOrCreate()
+  const { cert, key } = getOrCreate()
   serverKeypair = genKeypair()
   pendingToken = randomToken()
   pendingExpires = Date.now() + 120_000
 
-  server = https.createServer({ cert, key }, handleRequest)
-  server.listen(0, '0.0.0.0', () => {
-    portInUse = server.address().port
+  return new Promise((resolve, reject) => {
+    server = https.createServer({ cert, key }, handleRequest)
+    server.once('error', reject)
+    server.listen(0, '0.0.0.0', () => {
+      portInUse = server.address().port
+      resolve(getPairingInfo())
+    })
   })
-
-  return getPairingInfo()
 }
 
 function stopServer() {
@@ -165,4 +168,5 @@ module.exports = {
   getPairedDevices,
   revokeDevice,
   broadcast,
+  _setUserDataForTest: cert.setUserData,
 }

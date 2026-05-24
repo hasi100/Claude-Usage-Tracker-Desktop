@@ -1,9 +1,16 @@
 // claude.ai web usage — extracted from inline ipc.js logic.
-const { net } = require('electron')
+// `net` is lazy-loaded so tests can stub it via setNet().
+let _net = null
+function getNet() {
+  if (_net) return _net
+  _net = require('electron').net
+  return _net
+}
+function setNet(stub) { _net = stub }  // testing seam
 
 function get(url, headers) {
   return new Promise((resolve, reject) => {
-    const req = net.request({ url, method: 'GET' })
+    const req = getNet().request({ url, method: 'GET' })
     Object.entries(headers).forEach(([k, v]) => req.setHeader(k, v))
     req.on('response', (res) => {
       const chunks = []
@@ -50,4 +57,4 @@ async function fetchUsage(sessionKey, orgId) {
   return res.data
 }
 
-module.exports = { fetchOrgId, fetchUsage }
+module.exports = { fetchOrgId, fetchUsage, setNet }

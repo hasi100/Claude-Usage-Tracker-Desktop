@@ -187,7 +187,7 @@ function registerIpcHandlers(ipcMain, mainWindow, store) {
   })
 
   // ── Pairing ─────────────────────────────────────────
-  ipcMain.handle('pair:start', () => pairing.startServer())
+  ipcMain.handle('pair:start', async () => await pairing.startServer())
   ipcMain.handle('pair:stop',  () => { pairing.stopServer(); return { ok: true } })
   ipcMain.handle('pair:info',  () => pairing.getPairingInfo())
   ipcMain.handle('pair:devices', () => pairing.getPairedDevices())

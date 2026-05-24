@@ -2,12 +2,19 @@
 // The mobile app pins this cert via the fingerprint embedded in the QR.
 const path = require('path')
 const fs = require('fs')
-const { app } = require('electron')
 const selfsigned = require('selfsigned')
 const crypto = require('crypto')
 
+let _userDataDir = null
+function getUserData() {
+  if (_userDataDir) return _userDataDir
+  _userDataDir = require('electron').app.getPath('userData')
+  return _userDataDir
+}
+function setUserData(p) { _userDataDir = p }  // testing seam
+
 function certPath() {
-  return path.join(app.getPath('userData'), 'pairing-cert.json')
+  return path.join(getUserData(), 'pairing-cert.json')
 }
 
 function fingerprint(certPem) {
@@ -44,4 +51,4 @@ function getOrCreate() {
   return out
 }
 
-module.exports = { getOrCreate }
+module.exports = { getOrCreate, setUserData }

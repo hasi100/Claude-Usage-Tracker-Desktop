@@ -1,12 +1,14 @@
 // Anthropic Console — admin API key (sk-ant-admin01-...) → usage_report.
 // Returns monthly cost + last-30-day daily series + per-model and per-key breakdowns.
-const { net } = require('electron')
+let _net = null
+function getNet() { return _net ?? (_net = require('electron').net) }
+function setNet(stub) { _net = stub }  // testing seam
 
 const BASE = 'https://api.anthropic.com/v1'
 
 function req(url, headers, method = 'GET', body = null) {
   return new Promise((resolve, reject) => {
-    const r = net.request({ url, method })
+    const r = getNet().request({ url, method })
     Object.entries(headers).forEach(([k, v]) => r.setHeader(k, v))
     if (body) r.write(JSON.stringify(body))
     r.on('response', (res) => {
@@ -108,4 +110,4 @@ async function getUsage(adminKey) {
   }
 }
 
-module.exports = { getUsage }
+module.exports = { getUsage, setNet }
