@@ -1,0 +1,11 @@
+node_modules/
+mobile/node_modules/
+dist/
+dist-electron/
+.env
+*.local
+.DS_Store
+Thumbs.db
+.vite/
+*.log
+pairing-cert.json

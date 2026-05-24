@@ -1,0 +1,23 @@
+{
+  "expo": {
+    "name": "Claude Usage",
+    "slug": "claude-usage-mobile",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "Used to scan the desktop pairing QR code.",
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": true
+        }
+      }
+    },
+    "android": {
+      "permissions": ["android.permission.CAMERA"],
+      "usesCleartextTraffic": true
+    },
+    "plugins": ["expo-camera", "expo-secure-store"]
+  }
+}
