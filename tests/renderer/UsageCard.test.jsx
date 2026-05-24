@@ -3,20 +3,16 @@ import { render, screen } from '@testing-library/react'
 import UsageCard from '../../src/renderer/components/UsageCard'
 
 describe('<UsageCard />', () => {
-  it('renders title, tag, and percentage', () => {
+  it('renders title, tag, percentage and "Used" label', () => {
     render(<UsageCard title="Session" tag="5h" pct={42} resetAt={new Date(Date.now() + 60_000).toISOString()} windowHours={5} />)
     expect(screen.getByText('Session')).toBeInTheDocument()
     expect(screen.getByText('5h')).toBeInTheDocument()
-    expect(screen.getByText('42%')).toBeInTheDocument()
+    expect(screen.getByText(/42%/)).toBeInTheDocument()
+    const { container } = render(<UsageCard title="Z" tag="z" pct={42} />)
+    expect(container.querySelector('.uc-pct-label').textContent).toBe('Used')
   })
 
-  it('shows remaining % when showRemaining=true', () => {
-    render(<UsageCard title="X" tag="t" pct={70} showRemaining />)
-    expect(screen.getByText('30%')).toBeInTheDocument()
-  })
-
-  it('uses green at low %, orange mid, red high', () => {
-    // jsdom normalizes hex to rgb(). Match either form.
+  it('uses green <60, orange ≥60, red ≥80', () => {
     const matches = (bg, hex) => {
       const lower = bg.toLowerCase()
       if (lower.includes(hex.toLowerCase())) return true
@@ -26,7 +22,7 @@ describe('<UsageCard />', () => {
     const { rerender, container } = render(<UsageCard title="X" tag="t" pct={10} />)
     expect(matches(container.querySelector('.uc-bar-fill').style.background, '#10b981')).toBe(true)
 
-    rerender(<UsageCard title="X" tag="t" pct={60} />)
+    rerender(<UsageCard title="X" tag="t" pct={65} />)
     expect(matches(container.querySelector('.uc-bar-fill').style.background, '#F65D1F')).toBe(true)
 
     rerender(<UsageCard title="X" tag="t" pct={95} />)

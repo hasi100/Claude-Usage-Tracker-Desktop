@@ -51,24 +51,6 @@ export default function DisplayTab({ settings, patch }) {
         ))}
       </div>
 
-      <div className="tab-divider" />
-
-      <label className="ring-toggle-row">
-        <span className="settings-value">
-          Show Remaining %
-          <span className="settings-hint-inline">
-            {settings.showRemaining ? ' — showing "remaining"' : ' — showing "used"'}
-          </span>
-        </span>
-        <label className="toggle">
-          <input
-            type="checkbox"
-            checked={settings.showRemaining ?? false}
-            onChange={(e) => patch({ showRemaining: e.target.checked })}
-          />
-          <span className="toggle-track" />
-        </label>
-      </label>
     </div>
   )
 }

@@ -6,21 +6,19 @@ const STROKE = 6
 const R = (SIZE - STROKE) / 2
 const CIRC = 2 * Math.PI * R
 
+// Unified thresholds with UsageCard.
 function pctToColor(pct) {
   if (pct >= 80) return '#ef4444'
-  if (pct >= 50) return '#F65D1F'
+  if (pct >= 60) return '#F65D1F'
   return '#10b981'
 }
 
-export default function RingChart({ label, pct = 0, resetAt, loading = false, showRemaining = false }) {
+export default function RingChart({ label, pct = 0, resetAt, loading = false }) {
   const [displayed, setDisplayed] = useState(0)
-  // Color always reflects USED — red/orange thresholds make sense for usage,
-  // not for "remaining". Only the displayed number flips.
   const used = Math.min(100, Math.max(0, pct))
-  const shown = showRemaining ? 100 - used : used
 
   useEffect(() => {
-    const target = shown
+    const target = used
     if (displayed === target) return
     const step = (target - displayed) / 20
     const timer = setInterval(() => {
@@ -34,11 +32,10 @@ export default function RingChart({ label, pct = 0, resetAt, loading = false, sh
       })
     }, 40)
     return () => clearInterval(timer)
-  }, [shown])
+  }, [used])
 
-  // Arc length follows the *displayed* number for visual consistency.
   const dashOffset = CIRC - (displayed / 100) * CIRC
-  const color = pctToColor(used)  // colour by usage, not by remaining
+  const color = pctToColor(used)
   const isPulsing = used >= 90
 
   if (loading) {
@@ -91,7 +88,7 @@ export default function RingChart({ label, pct = 0, resetAt, loading = false, sh
           fontWeight="700"
           fontFamily="inherit"
         >
-          {pct === 0 && label === 'Design' ? '—' : `${Math.round(shown)}%`}
+          {pct === 0 && label === 'Design' ? '—' : `${Math.round(used)}%`}
         </text>
       </svg>
       <span className="ring-label">{label}</span>

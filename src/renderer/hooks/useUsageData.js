@@ -3,8 +3,15 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 function toPct(val) {
   if (val == null) return 0
   if (typeof val === 'string') val = parseFloat(val)
-  // API returns 0–1 decimal (e.g. 0.43 = 43%)
   return val <= 1 ? Math.round(val * 100) : Math.round(val)
+}
+
+// The claude.ai API's `utilization` field represents *remaining capacity*,
+// not used. Their own website renders it as (1 - utilization) labelled
+// "% used". We mirror that so what we display matches claude.ai.
+function toUsedPct(val) {
+  if (val == null) return 0
+  return Math.max(0, Math.min(100, 100 - toPct(val)))
 }
 
 function parseUsage(raw) {
@@ -22,11 +29,11 @@ function parseUsage(raw) {
   const sevenDayOpus = raw.seven_day_opus ?? {}
 
   return {
-    session:      toPct(fiveHour.utilization),
+    session:      toUsedPct(fiveHour.utilization),
     sessionReset: fiveHour.resets_at ?? null,
-    weekly:       toPct(sevenDay.utilization),
+    weekly:       toUsedPct(sevenDay.utilization),
     weeklyReset:  sevenDay.resets_at ?? null,
-    design:       toPct(sevenDayOpus.utilization),
+    design:       toUsedPct(sevenDayOpus.utilization),
     designReset:  sevenDayOpus.resets_at ?? null,
   }
 }

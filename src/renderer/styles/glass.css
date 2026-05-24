@@ -183,6 +183,14 @@ html, body, #root {
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
+.uc-pct-label {
+  font-size: 9px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--fg-muted);
+  margin-left: 2px;
+}
 
 /* Progress bar */
 .uc-bar-track {
