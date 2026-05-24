@@ -10,35 +10,21 @@ Built with Electron + React + Vite. Dark glass UI, premium-orange accent.
 
 ## Screenshots
 
-> Drop your screenshots into `.github/screenshots/` with the filenames below.
-
 ### Main window
 
-![Main — cards style](.github/screenshots/main-cards.png)
-![Main — rings style](.github/screenshots/main-rings.png)
-
-### Mini pill
-
-![Mini pill](.github/screenshots/mini-pill.png)
+| Cards style | Rings style |
+| --- | --- |
+| ![Progress bar display](img/Progress%20Bar%20Display.png) | ![Circle display](img/Circle%20Display.png) |
 
 ### Settings (sidebar)
 
-| Profile | Auth | Sources |
+| Profile / overview | Auth | Sources |
 | --- | --- | --- |
-| ![](./.github/screenshots/settings-profile.png) | ![](./.github/screenshots/settings-auth.png) | ![](./.github/screenshots/settings-sources.png) |
+| ![](img/Setting.png) | ![](img/Auth.png) | ![](img/Sources.png) |
 
 | Display | Mobile (QR) | General |
 | --- | --- | --- |
-| ![](./.github/screenshots/settings-display.png) | ![](./.github/screenshots/settings-mobile.png) | ![](./.github/screenshots/settings-general.png) |
-
-### API + CLI cards
-
-![API Console card](.github/screenshots/source-api.png)
-![CLI card](.github/screenshots/source-cli.png)
-
-### Mobile companion
-
-![Mobile dashboard](.github/screenshots/mobile-dashboard.png)
+| ![](img/Display.png) | ![](img/Mobile%20Widgets.png) | ![](img/General.png) |
 
 ---
 
