@@ -12,12 +12,15 @@ function pctToColor(pct) {
   return '#10b981'
 }
 
-export default function RingChart({ label, pct = 0, resetAt, loading = false }) {
+export default function RingChart({ label, pct = 0, resetAt, loading = false, showRemaining = false }) {
   const [displayed, setDisplayed] = useState(0)
+  // Color always reflects USED — red/orange thresholds make sense for usage,
+  // not for "remaining". Only the displayed number flips.
+  const used = Math.min(100, Math.max(0, pct))
+  const shown = showRemaining ? 100 - used : used
 
   useEffect(() => {
-    // Animate to new value
-    const target = Math.min(100, Math.max(0, pct))
+    const target = shown
     if (displayed === target) return
     const step = (target - displayed) / 20
     const timer = setInterval(() => {
@@ -31,11 +34,12 @@ export default function RingChart({ label, pct = 0, resetAt, loading = false }) 
       })
     }, 40)
     return () => clearInterval(timer)
-  }, [pct])
+  }, [shown])
 
+  // Arc length follows the *displayed* number for visual consistency.
   const dashOffset = CIRC - (displayed / 100) * CIRC
-  const color = pctToColor(pct)
-  const isPulsing = pct >= 90
+  const color = pctToColor(used)  // colour by usage, not by remaining
+  const isPulsing = used >= 90
 
   if (loading) {
     return (
@@ -87,7 +91,7 @@ export default function RingChart({ label, pct = 0, resetAt, loading = false }) 
           fontWeight="700"
           fontFamily="inherit"
         >
-          {pct === 0 && label === 'Design' ? '—' : `${Math.round(pct)}%`}
+          {pct === 0 && label === 'Design' ? '—' : `${Math.round(shown)}%`}
         </text>
       </svg>
       <span className="ring-label">{label}</span>

@@ -146,7 +146,7 @@ export default function App() {
     style === 'rings' ? (
       <div className="rings-row">
         {webMetrics.map((m) => (
-          <RingChart key={m.key} label={m.title} pct={m.pct} resetAt={m.resetAt} loading={isLoading} />
+          <RingChart key={m.key} label={m.title} pct={m.pct} resetAt={m.resetAt} loading={isLoading} showRemaining={showRemaining} />
         ))}
       </div>
     ) : (

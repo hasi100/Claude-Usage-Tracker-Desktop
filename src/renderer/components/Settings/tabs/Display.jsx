@@ -54,7 +54,12 @@ export default function DisplayTab({ settings, patch }) {
       <div className="tab-divider" />
 
       <label className="ring-toggle-row">
-        <span className="settings-value">Show Remaining %</span>
+        <span className="settings-value">
+          Show Remaining %
+          <span className="settings-hint-inline">
+            {settings.showRemaining ? ' — showing "remaining"' : ' — showing "used"'}
+          </span>
+        </span>
         <label className="toggle">
           <input
             type="checkbox"
