@@ -1,17 +1,12 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 
-function toPct(val) {
-  if (val == null) return 0
-  if (typeof val === 'string') val = parseFloat(val)
-  return val <= 1 ? Math.round(val * 100) : Math.round(val)
-}
-
-// The claude.ai API's `utilization` field represents *remaining capacity*,
-// not used. Their own website renders it as (1 - utilization) labelled
-// "% used". We mirror that so what we display matches claude.ai.
+// claude.ai's API returns `utilization` as the fraction already used
+// (0–1 decimal). Empirically: API 0.74 ↔ claude.ai shows "74% used".
 function toUsedPct(val) {
   if (val == null) return 0
-  return Math.max(0, Math.min(100, 100 - toPct(val)))
+  let v = typeof val === 'string' ? parseFloat(val) : val
+  v = v <= 1 ? v * 100 : v
+  return Math.max(0, Math.min(100, Math.round(v)))
 }
 
 function parseUsage(raw) {
